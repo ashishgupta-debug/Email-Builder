@@ -101,8 +101,8 @@ export default function Home() {
       setTemplates(response.data); // Save templates to state
       setLoading(false);
     } catch (error) {
-      notify("Error fetching templates.", "error");
-      setLoading(false);
+        notify("Error fetching templates.", "error");
+        setLoading(false);
     }
   };
 
@@ -111,10 +111,20 @@ export default function Home() {
   }, []);
 
   useEffect(() => {
-    axios.get( apiURL + "/getEmailLayout" ).then((response) => {
-      setLayout(response.data);
-    });
+    const fetchLayout = async () => {
+      try {
+        const response = await axios.get(apiURL + "/getEmailLayout");
+        setLayout(response.data);
+      } catch (error) {
+        console.error("Error fetching email layout:", error);
+        // Notify or handle the error in your application
+        notify("Error fetching email layout. Please try again.", "error");
+      }
+    };
+  
+    fetchLayout(); // Call the async function
   }, []);
+  
 
   const handleInputChange = (e) => {
     const { name, value } = e.target;
