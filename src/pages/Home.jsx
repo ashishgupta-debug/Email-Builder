@@ -117,7 +117,6 @@ export default function Home() {
         setLayout(response.data);
       } catch (error) {
         console.error("Error fetching email layout:", error);
-        // Notify or handle the error in your application
         notify("Error fetching email layout. Please try again.", "error");
       }
     };
