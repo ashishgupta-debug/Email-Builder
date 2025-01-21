@@ -97,7 +97,7 @@ export default function Home() {
   const fetchTemplates = async () => {
     try {
       setLoading(true);
-      const response = await axios.get( apiURL + "/getAllTemplates" );
+      const response = await axios.get( apiURL + "getAllTemplates" );
       setTemplates(response.data); // Save templates to state
       setLoading(false);
     } catch (error) {
@@ -113,7 +113,7 @@ export default function Home() {
   useEffect(() => {
     const fetchLayout = async () => {
       try {
-        const response = await axios.get(apiURL + "/getEmailLayout");
+        const response = await axios.get(apiURL + "getEmailLayout");
         setLayout(response.data);
       } catch (error) {
         console.error("Error fetching email layout:", error);
@@ -140,7 +140,7 @@ export default function Home() {
       formData.append("image", imageFile);
 
       const response = await axios.post(
-        apiURL + "/uploadImage",
+        apiURL + "uploadImage",
         formData
       );
       setEmailConfig({ ...emailConfig, imageUrl: response.data.imageUrl });
@@ -192,7 +192,7 @@ export default function Home() {
 
         // Make the API call to save the configuration
         const response = await axios.post(
-          apiURL + "/uploadEmailConfig",
+          apiURL + "uploadEmailConfig",
           emailConfigData
         );
 
@@ -237,7 +237,7 @@ export default function Home() {
           imageUrl: emailConfig.imageUrl,
         };
         await axios.put(
-          apiURL + `/updateTemplate/${id}`,
+          apiURL + `updateTemplate/${id}`,
           emailConfigData
         );
         notify("Template updated successfully!", "success"); // Success message
@@ -268,7 +268,7 @@ export default function Home() {
     if (result.isConfirmed) {
       try {
         // Make the API call to delete the template
-        await axios.delete( apiURL + `/deleteTemplate/${id}` );
+        await axios.delete( apiURL + `deleteTemplate/${id}` );
 
         // Update the UI by removing the deleted template from the state
         setTemplates(templates.filter((template) => template._id !== id));
@@ -311,7 +311,7 @@ export default function Home() {
       try {
         console.log("Sending request with templateName:", emailConfig.title);
         const response = await axios.post(
-          apiURL + "/renderAndDownloadTemplate",
+          apiURL + "renderAndDownloadTemplate",
           { templateName: emailConfig.title }, // Send only templateName
           { responseType: "blob" }
         );
