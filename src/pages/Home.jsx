@@ -4,7 +4,6 @@ import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import Swal from "sweetalert2";
 
-
 const apiURL = process.env.REACT_APP_API_URL;
 
 export default function Home() {
@@ -25,9 +24,9 @@ export default function Home() {
     if (type === "success") toast.success(message);
     else if (type === "error") toast.error(message);
     else toast.info(message);
-  }; 
+  };
 
-//   Function to handle image change
+  //   Function to handle image change
   const handleImageChange = (e) => {
     const file = e.target.files[0];
     if (file) {
@@ -38,7 +37,6 @@ export default function Home() {
       }));
     }
   };
-
 
   // Function to create a new template
   const handleNewTemplate = async () => {
@@ -93,16 +91,16 @@ export default function Home() {
     }
   }, [setImageFile]);
 
-//   Function to fetch all templates
+  //   Function to fetch all templates
   const fetchTemplates = async () => {
     try {
       setLoading(true);
-      const response = await axios.get( apiURL + "getAllTemplates" );
+      const response = await axios.get(apiURL + "getAllTemplates");
       setTemplates(response.data); // Save templates to state
       setLoading(false);
     } catch (error) {
-        notify("Error fetching templates.", "error");
-        setLoading(false);
+      notify("Error fetching templates.", "error");
+      setLoading(false);
     }
   };
 
@@ -113,17 +111,18 @@ export default function Home() {
   useEffect(() => {
     const fetchLayout = async () => {
       try {
+        setLoading(true);
         const response = await axios.get(apiURL + "getEmailLayout");
         setLayout(response.data);
+        setLoading(false);
       } catch (error) {
         console.error("Error fetching email layout:", error);
         notify("Error fetching email layout. Please try again.", "error");
       }
     };
-  
+
     fetchLayout(); // Call the async function
   }, []);
-  
 
   const handleInputChange = (e) => {
     const { name, value } = e.target;
@@ -139,10 +138,7 @@ export default function Home() {
       const formData = new FormData();
       formData.append("image", imageFile);
 
-      const response = await axios.post(
-        apiURL + "uploadImage",
-        formData
-      );
+      const response = await axios.post(apiURL + "uploadImage", formData);
       setEmailConfig({ ...emailConfig, imageUrl: response.data.imageUrl });
       notify("Image uploaded successfully!", "success");
     } catch (error) {
@@ -165,10 +161,10 @@ export default function Home() {
 
   const handleSave = async () => {
     // Validate if the title and body are provided
-  if (!emailConfig.title || !emailConfig.content) {
-    notify("Title and body are required fields.", "error");
-    return; // Stop further execution if validation fails
-  }
+    if (!emailConfig.title || !emailConfig.content) {
+      notify("Title and body are required fields.", "error");
+      return; // Stop further execution if validation fails
+    }
     // Show confirmation alert using SweetAlert with a 'question' icon
     const result = await Swal.fire({
       title: "Are you sure?",
@@ -214,10 +210,10 @@ export default function Home() {
 
   const handleUpdate = async (id) => {
     // Validate if the title and body are provided
-  if (!emailConfig.title || !emailConfig.content) {
-    notify("Title and body are required fields.", "error");
-    return; // Stop further execution if validation fails
-  }
+    if (!emailConfig.title || !emailConfig.content) {
+      notify("Title and body are required fields.", "error");
+      return; // Stop further execution if validation fails
+    }
     // Show confirmation alert using SweetAlert
     const result = await Swal.fire({
       title: "Are you sure?",
@@ -236,10 +232,7 @@ export default function Home() {
           footer: emailConfig.footer,
           imageUrl: emailConfig.imageUrl,
         };
-        await axios.put(
-          apiURL + `updateTemplate/${id}`,
-          emailConfigData
-        );
+        await axios.put(apiURL + `updateTemplate/${id}`, emailConfigData);
         notify("Template updated successfully!", "success"); // Success message
         fetchTemplates();
       } catch (error) {
@@ -268,7 +261,7 @@ export default function Home() {
     if (result.isConfirmed) {
       try {
         // Make the API call to delete the template
-        await axios.delete( apiURL + `deleteTemplate/${id}` );
+        await axios.delete(apiURL + `deleteTemplate/${id}`);
 
         // Update the UI by removing the deleted template from the state
         setTemplates(templates.filter((template) => template._id !== id));
@@ -382,26 +375,33 @@ export default function Home() {
   return (
     <div className="w-full h-full">
       <ToastContainer />
-      <div className="flex flex-row gap-2 pt-14">
+      <div className="flex flex-col md:flex-row gap-2 pt-14">
         <div className="w-full border">
           <h2 className="text-center text-3xl font-semibold p-2 text-slate-700 border">
             Preview
           </h2>
-          <div
-            dangerouslySetInnerHTML={{
-              __html: layout
-                .replace("{{title}}", emailConfig.title.replace(/\n/g, "<br>"))
-                .replace(
-                  "{{content}}",
-                  emailConfig.content.replace(/\n/g, "<br>")
-                )
-                .replace(
-                  "{{footer}}",
-                  emailConfig.footer.replace(/\n/g, "<br>")
-                )
-                .replace("{{imageUrl}}", emailConfig.imageUrl || ""),
-            }}
-          />
+          {loading ? (
+            <p className="text-center mt-5 text-slate-600">Loading...</p>
+          ) : (
+            <div
+              dangerouslySetInnerHTML={{
+                __html: layout
+                  .replace(
+                    "{{title}}",
+                    emailConfig.title.replace(/\n/g, "<br>")
+                  )
+                  .replace(
+                    "{{content}}",
+                    emailConfig.content.replace(/\n/g, "<br>")
+                  )
+                  .replace(
+                    "{{footer}}",
+                    emailConfig.footer.replace(/\n/g, "<br>")
+                  )
+                  .replace("{{imageUrl}}", emailConfig.imageUrl || ""),
+              }}
+            />
+          )}
         </div>
 
         <div className="w-full border">
@@ -464,7 +464,7 @@ export default function Home() {
                     Image selected{" "}
                   </p>
                   <button
-                    className="bg-slate-300 w-36 mb-2 border rounded-lg"
+                    className="bg-slate-300 border rounded-lg w-36 min-h-8 flex justify-center items-center transition-all transform hover:scale-105 duration-300 ease-in-out shadow-md mb-2"
                     onClick={handleClearImage}
                   >
                     Clear Image
@@ -476,35 +476,35 @@ export default function Home() {
                 </p>
               )}
               <button
-                className="bg-slate-300 w-36 border rounded-lg"
+                className="bg-slate-300 border rounded-lg w-36 min-h-8 flex justify-center items-center transition-all transform hover:scale-105 duration-300 ease-in-out shadow-md"
                 onClick={handleImageUpload}
               >
                 Upload Image
               </button>
             </div>
-            <div>
+            <div className="flex justify-center items-center">
               {!isEditing ? (
                 <button
-                  className="bg-slate-300 mt-5 border rounded-lg w-60 min-h-10 flex justify-center items-center transition-all transform hover:scale-105 duration-300 ease-in-out shadow-md ml-40"
+                  className="bg-slate-300 mt-5 border rounded-lg w-60 min-h-10 flex justify-center items-center transition-all transform hover:scale-105 duration-300 ease-in-out shadow-md"
                   onClick={handleSave}
                 >
                   Save Template
                 </button>
               ) : (
                 <button
-                  className="bg-slate-300 mt-5 border rounded-lg w-60 min-h-12 flex justify-center items-center transition-all transform hover:scale-105 duration-300 ease-in-out shadow-md ml-40"
+                  className="bg-slate-300 mt-5 border rounded-lg w-60 min-h-12 flex justify-center items-center transition-all transform hover:scale-105 duration-300 ease-in-out shadow-md"
                   onClick={() => handleUpdate(id)}
                 >
                   Update Template
                 </button>
               )}
             </div>
-            <div>
-              <p className="text-center text-sm mt-5 text-slate-500">
+            <div className="flex flex-col justify-center items-center">
+              <p className="text-center text-sm pt-2 text-slate-500">
                 Before download make sure you have saved the template
               </p>
               <button
-                className="bg-slate-400 mt-2 border rounded-lg w-60 min-h-12 flex justify-center items-center transition-all transform hover:scale-105 duration-300 ease-in-out shadow-md ml-40"
+                className="bg-slate-400 mt-2 border rounded-lg w-60 min-h-12 flex justify-center items-center transition-all transform hover:scale-105 duration-300 ease-in-out shadow-md"
                 onClick={handleDownload}
               >
                 Download Template
@@ -515,8 +515,10 @@ export default function Home() {
         </div>
       </div>
 
-      <div className="z-50">
-        <h2 className="text-center text-3xl font-semibold pt-10 text-slate-700 border">Templates</h2>
+      <div className="z-50 mt-2">
+        <h2 className="text-center text-3xl font-semibold p-5 text-slate-700 border">
+          Templates
+        </h2>
         {loading ? (
           <p className="text-center mt-5 text-slate-600">Loading...</p>
         ) : templates.length === 0 ? (
